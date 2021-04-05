@@ -8,7 +8,7 @@ module.exports = () => {
   };
 
 const mdLinks = (path, options) => {
-    if (path !== isMdOrNot()) {
+    if (path !== isMdOrNot(path)) {
         console.log('No es un archivo MD'.rainbow)
         readFiles();
         //función de un solo archivo.

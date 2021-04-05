@@ -1,11 +1,14 @@
 const colors = require('colors');
 const path = require('path');
 const fs = require('fs');
-const fetch = require('node-fetch')
+const fetch = require('node-fetch');
+const { get } = require('http');
+const { url } = require('inspector');
+const { Console } = require('console');
+const { resolveAny } = require('dns');
 
 const pathDir = 'C:/Users/hp/Documents/Laboratoria/CDMX010-md-links/documentos';
-// const linksCuts = [];
-// const linksFine = [];
+
 // Ruta
 const way = (file) => {
 const join = pathDir;
@@ -15,38 +18,91 @@ console.log(`link: ${path.join(join, joinFile)}`.bgGreen);
 
 
 // Verificar si es carpeta.
-const isMdOrNot = (file) => {
+const isMdOrNot = (path) => {
   const expression = /^(.+)\/([^\/]+)$/m;
   const result = file.match(expression);
-  console.log(result)
+  //console.log(result)
 } 
 
 // Obtener los links.
 const getLinks = (data) => {
 const resultado = data.match(/\(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,}\gi/gm);
-console.log(resultado);
-validationLinks(data);
+//console.log(resultado);
+validationLinks(resultado);
+statsStadistics(resultado);
 }
 
 //Validar links.
-const validationLinks = (data) => {
-  data.forEach(link => {
-    let promesa = fetch(link);
-    promesa.then((res) => {
-      return res.json();
-    })
-    .then((json) => {
-      console.log(json);
-    })
-  })
+const validationLinks = (resultado) => {
+  resultado.forEach((link) => {
+      const newLinks = link.slice(1,40);
+      //console.log(newLinks);
+      linksFetch(newLinks);
+  });
+  // statsStadistics(resultado);
 }
 
+const parsePath = path.parse(__filename);
+const dirPath = parsePath.dir;
+
+const linksFetch = (link) => {
+  const arrayLinks = [];
+  arrayLinks.push(link);
+  // statsStadistics(arrayLinks);
+  arrayLinks.map(() => {
+  fetch(arrayLinks,get)
+    .then((res) => {
+        validateStatus(res, link);
+        //statsStadistics(arrayLinks);
+     }
+    )
+    .catch(
+      (error) => console.log(error)
+    )
+    })
+} 
+
+const validateStatus = (res, link) => {
+  if(res.statusText === 'OK') {
+    console.log({path: dirPath, status: res.status, statusText: 'OK', url:link})
+  } else {
+    console.log({path: dirPath, status: res.status, statusText: 'FAIL', url:link})
+  }
+}
+
+const statsStadistics = (arrayLinks) => {
+  let linksFine = [];
+  let linksBad = [];
+  let totalLinks = [];
+  let result = {};
+  arrayLinks.forEach((link) => {
+    totalLinks.push(link);
+    if (link.statusText === 'OK') {
+      linksFine.push(link);
+    } else if (link.statusText === 'FAIL') {
+      linksBad.push(link)
+    }
+  });
+  result = {
+    Correct: linksFine.length,
+    Broken: linksBad.length,
+    total: totalLinks.length,
+  }
+  console.log(result);
+  return result;
+  // let linksOK = arrayLinks.filter(arrayLink => arrayLink.statusText === 'OK');
+  // let oks = linksFine.push(linksOK);
+  // let linksFail = arrayLinks.filter(arrayLink => arrayLink.statusText === 'FAIL');
+  // let fails = linksBad.push(linksFail);
+  // console.log('Correct:', oks.length);
+  // console.log('Broken:', fails.length);
+}
 
 //leer archivo.
 const readFiles = (file) => {
   fs.readFile(`${path.join(pathDir, file)}`, 'utf8', (err, data) => {
   try {
-    console.log(data.zebra.magenta);
+    //console.log(data.magenta);
     // obtener links de cada archivo.
     getLinks(data);
   } catch {
@@ -60,7 +116,7 @@ const readFiles = (file) => {
 const filesDir = () => {
 	fs.readdir(pathDir, (err, data) => {
 		if (err) {
-			return console.log(('Error al procesar el archivo'.rainbow));
+			return console.log(('Error al procesar el archivo'));
 		}	else {
 		  data.forEach((file) => {
 				if (file === undefined) {

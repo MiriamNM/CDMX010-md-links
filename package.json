@@ -21,7 +21,8 @@
   },
   "homepage": "https://github.com/MiriamNM/CDMX010-md-links#readme",
   "dependencies": {
-    "colors": "^1.4.0"
+    "colors": "^1.4.0",
+    "node-fetch": "^2.6.1"
   },
   "devDependencies": {
     "jest": "^26.6.3"
