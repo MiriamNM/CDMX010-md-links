@@ -1,6 +1,14 @@
-const isMdOrNot = require('./files-paths.js');
-const filesDir = require('./files-paths.js');
-const readFiles = require('./files-paths');
+const isMdOrNot = require('./functions.js');
+const filesDir = require('./functions.js');
+const readFiles = require('./functions');
+const colors = require('colors');
+const path = require('path');
+const fs = require('fs');
+const fetch = require('node-fetch');
+const { get } = require('http');
+const { url } = require('inspector');
+const { Console } = require('console');
+const { resolveAny } = require('dns');
 
 module.exports = () => {
     // ...
@@ -8,12 +16,6 @@ module.exports = () => {
   };
 
 const mdLinks = (path, options) => {
-    if (path !== isMdOrNot(path)) {
-        console.log('No es un archivo MD'.rainbow)
-        readFiles();
-        //función de un solo archivo.
-    } else {
-        filesDir();
-    }
+
 };
 return mdLinks();
