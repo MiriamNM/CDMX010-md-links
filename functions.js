@@ -6,35 +6,33 @@ const { get } = require('http');
 const { url } = require('inspector');
 const { Console } = require('console');
 const { resolveAny } = require('dns');
+const { rejects } = require('assert');
 
-const pathDir = 'C:/Users/hp/Documents/Laboratoria/CDMX010-md-links/documentos';
+const archivePath = 'C:/Users/hp/Documents/Laboratoria/CDMX010-md-links/documentos';
 
 // Ruta
 const way = (file) => {
-const join = pathDir;
+const join = archivePath;
 const joinFile = file;
 console.log(`link: ${path.join(join, joinFile)}`.bgGreen);
 }
 
 
 // Verificar si es carpeta.
-const isMdOrNot = (path) => {
-  const expression = /^(.+)\/([^\/]+)$/m;
-  const result = file.match(expression);
+//const isMdOrNot = (archivePath) => {
+  
   //console.log(result)
-} 
+ 
 
 // Obtener los links.
 const getLinks = (data) => {
 const resultado = data.match(/\(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,}\gi/gm);
-//console.log(resultado);
-validationLinks(resultado);
-statsStadistics(resultado);
+return resultado;
 }
 
 //Validar links.
-const validationLinks = (resultado) => {
-  resultado.forEach((link) => {
+const validationLinks = (getLinks) => {
+  getLinks().forEach((link) => {
       const newLinks = link.slice(1,40);
       //console.log(newLinks);
       linksFetch(newLinks);
@@ -48,12 +46,10 @@ const dirPath = parsePath.dir;
 const linksFetch = (link) => {
   const arrayLinks = [];
   arrayLinks.push(link);
-  // statsStadistics(arrayLinks);
   arrayLinks.map(() => {
   fetch(arrayLinks,get)
     .then((res) => {
         validateStatus(res, link);
-        //statsStadistics(arrayLinks);
      }
     )
     .catch(
@@ -100,14 +96,17 @@ const statsStadistics = (arrayLinks) => {
 
 //leer archivo.
 const readFiles = (file) => {
-  const filesWithRead = fs.readFileSync(`${path.join(pathDir, file)}`, 'utf8');
-  getLinks(filesWithRead);
+  const filesWithRead = fs.readFileSync(`${path.join(__dirName, file)}`, 'utf8');
+  const links = getLinks(filesWithRead);
+  // const validateL = validationLinks(links);
+  // return console.log(validateL)
+  return links
 }
 
 
 // Lectura de archivo de carpetas.
-const filesDir = () => {
-	const dirWithRead = fs.readdirSync(pathDir, 'utf-8');
+const filesDir = (archivePath) => {
+	const dirWithRead = fs.readdirSync(archivePath, 'utf-8');
   dirWithRead.forEach((file) => {
     if (file === undefined) {
       console.log('Ingresa el archivo')
@@ -126,5 +125,35 @@ const filesDir = () => {
     };
   });  
 }
-return filesDir()
+//return filesDir()
+const extensionMD = '.md';
+const extension = path.extname(files);
+const expression = /^(.+)\/([^\/]+)$/m;
+const result = archivePath.match(expression);
+
+const onlyPath = (files) => {
+if (extension === extensionMD) {
+  return (readFiles(files))
+} else if (result) {
+  return (filesDir(files))
+}
+}
+//return onlyPath()
+
+archivePath = 'C:/Users/hp/Documents/Laboratoria/CDMX010-md-links/documentos';
+const pathValidate = (files) => {
+  return new Promise ((resolve, rejects) => {
+    if (path.extname(files) === extensionMD) {
+      const filesWithRead = fs.readFileSync(`${path.join(files, file)}`, 'utf8');
+      const links = getLinks(filesWithRead);
+      resolve(links)
+    } else if (result) {
+      filesDir(files);
+    }
+  })};
+  pathValidate(archivePath)
+    .then((result)=>{validationLinks(result)})
+    .then((result)=>{statsStadistics(result)})
+    .catch((err)=>{console.log(err)})
+    return Promise.all()
 
