@@ -4,8 +4,10 @@ const fs = require('fs');
 const fetch = require('node-fetch');
 const { get } = require('http');
 const { url } = require('inspector');
-const { Console } = require('console');
+const { Console, error } = require('console');
 const { resolveAny } = require('dns');
+const { rejects } = require('assert');
+const { resolve } = require('path');
 
 const pathDir = 'C:/Users/hp/Documents/Laboratoria/CDMX010-md-links/documentos';
 
@@ -26,10 +28,15 @@ const isMdOrNot = (path) => {
 
 // Obtener los links.
 const getLinks = (data) => {
+return new Promise((resolve, rejects) => {
 const resultado = data.match(/\(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,}\gi/gm);
 //console.log(resultado);
-validationLinks(resultado);
-statsStadistics(resultado);
+if (resultado) {
+resolve(validationLinks(resultado));
+} else {
+  rejects(console.log(error))
+}
+})
 }
 
 //Validar links.
@@ -70,12 +77,12 @@ const validateStatus = (res, link) => {
   }
 }
 
-const statsStadistics = (arrayLinks) => {
+const statsStadistics = (links) => {
   let linksFine = [];
   let linksBad = [];
   let totalLinks = [];
   let result = {};
-  arrayLinks.forEach((link) => {
+  links.forEach((link) => {
     totalLinks.push(link);
     if (link.statusText === 'OK') {
       linksFine.push(link);
@@ -100,15 +107,14 @@ const statsStadistics = (arrayLinks) => {
 
 //leer archivo.
 const readFiles = (file) => {
-  fs.readFile(`${path.join(pathDir, file)}`, 'utf8', (err, data) => {
-  try {
-    //console.log(data.magenta);
-    // obtener links de cada archivo.
-    getLinks(data);
-  } catch {
-    console.log(err);
-  };  
-});
+  const datafile = fs.readFileSync(`${path.join(pathDir, file)}`, 'utf8')
+  getLinks(datafile)
+    .then((arrayLinks) => {
+      const stats = statsStadistics(arrayLinks);
+      return Promise.all(stats);
+    })
+    .catch((err) => console.log(err));  
+  return getLinks(datafile)
 }
 
 
