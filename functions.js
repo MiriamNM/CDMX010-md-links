@@ -103,9 +103,16 @@ const statsStadistics = (arrayLinks) => {
   // console.log('Broken:', fails.length);
 }
 
+//leer archivo INDIVIDUAL.
+const readFile = (file) => {
+  const filesWithRead = fs.readFileSync(file, 'utf8');
+  const links = getLinks(filesWithRead);
+  return console.log(links);
+}
+
 //leer archivo.
 const readFiles = (file) => {
-  const filesWithRead = fs.readFileSync(file, 'utf8');
+  const filesWithRead = fs.readFileSync(path.join(archivePath, file), 'utf8');
   const links = getLinks(filesWithRead);
   return console.log(links);
 }
@@ -146,7 +153,7 @@ return result;
 const onlyPath = (files) => {
   const extension = path.extname(files);
   if (extension === '.md') {
-    return (readFiles(files))
+    return (readFile(files))
   } else if (searchDir(files)) {
     return (filesDir(files))
   }
@@ -157,9 +164,7 @@ return onlyPath()
 // const pathValidate = (files) => {
 //   return new Promise ((resolve, reject) => {
 //     if (path.extname(files) === '.md') {
-//       const archivesRead = fs.readFileSync(files, 'utf8');
-//       const links = getLinks(archivesRead);
-//       resolve(links)
+//       resolve(readFile(files))
 //     } else if (searchDir(files)) {
 //       reject(filesDir(files));
 //     }
@@ -177,9 +182,7 @@ return onlyPath()
 // const pathValidate = (files) => {
 //   return new Promise ((resolve, reject) => {
 //     if (path.extname(files) === '.md') {
-//       const archivesRead = fs.readFileSync(files, 'utf8');
-//       const links = getLinks(archivesRead);
-//       resolve(links);
+//       resolve(readFile(files));
 //     } else if (searchDir(files)) {
 //       reject(filesDir(files));
 //     }
