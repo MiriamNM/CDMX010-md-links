@@ -96,23 +96,22 @@ const statsStadistics = (arrayLinks) => {
 
 //leer archivo.
 const readFiles = (file) => {
-  const filesWithRead = fs.readFileSync(`${path.join(__dirName, file)}`, 'utf8');
+  const filesWithRead = fs.readFileSync(file, 'utf8');
   const links = getLinks(filesWithRead);
-  // const validateL = validationLinks(links);
-  // return console.log(validateL)
   return links
 }
 
 
 // Lectura de archivo de carpetas.
-const filesDir = (archivePath) => {
-	const dirWithRead = fs.readdirSync(archivePath, 'utf-8');
+const filesDir = (files) => {
+	const dirWithRead = fs.readdirSync(__dirname, 'utf-8');
+  console.log(__dirname.bgRed);
+  console.log(__filename.bgRed);
   dirWithRead.forEach((file) => {
     if (file === undefined) {
       console.log('Ingresa el archivo')
     } else {
-      const extFile = path.extname(file);
-      if (extFile === '.md') {
+      if (path.extname(file) === '.md') {
         // manipular cada archivo.
         console.log(file.bgRed);
         way(file);
@@ -126,34 +125,36 @@ const filesDir = (archivePath) => {
   });  
 }
 //return filesDir()
-const extensionMD = '.md';
-const extension = path.extname(files);
-const expression = /^(.+)\/([^\/]+)$/m;
-const result = archivePath.match(expression);
 
+//Busca si el path es carpeta.
+const searchDir = (files) => {
+const expression = /^(.+)\/([^\/]+)$/m;
+const result = files.match(expression);
+return result;
+}
+
+//cuando solo ponen path
 const onlyPath = (files) => {
-if (extension === extensionMD) {
+if (path.extname(files) === '.md') {
   return (readFiles(files))
-} else if (result) {
+} else if (searchDir(files)) {
   return (filesDir(files))
 }
 }
 //return onlyPath()
 
-archivePath = 'C:/Users/hp/Documents/Laboratoria/CDMX010-md-links/documentos';
+// Cuando ponen path y validate.
 const pathValidate = (files) => {
-  return new Promise ((resolve, rejects) => {
-    if (path.extname(files) === extensionMD) {
-      const filesWithRead = fs.readFileSync(`${path.join(files, file)}`, 'utf8');
+  return new Promise ((resolve, reject) => {
+    if (path.extname(files) === '.md') {
+      const filesWithRead = fs.readFileSync(files, 'utf8');
       const links = getLinks(filesWithRead);
       resolve(links)
-    } else if (result) {
-      filesDir(files);
+    } else if (searchDir(files)) {
+      reject(filesDir(files));
     }
   })};
-  pathValidate(archivePath)
-    .then((result)=>{validationLinks(result)})
-    .then((result)=>{statsStadistics(result)})
-    .catch((err)=>{console.log(err)})
-    return Promise.all()
-
+  return Promise.all(pathValidate(archivePath))
+    .then((res)=>{validationLinks(res)})
+    .then((res)=>{statsStadistics(res)})
+    .catch((err)=>{console.log(err)});
