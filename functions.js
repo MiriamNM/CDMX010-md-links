@@ -101,7 +101,7 @@ const statsStadistics = (arrayLinks) => {
 //leer archivo.
 const readFiles = (file) => {
   const filesWithRead = fs.readFileSync(`${path.join(pathDir, file)}`, 'utf8');
-  getLinks(filesWithRead);
+  return getLinks(filesWithRead);
 }
 
 
