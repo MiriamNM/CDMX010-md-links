@@ -28,15 +28,14 @@ const isMdOrNot = (path) => {
 
 // Obtener los links.
 const getLinks = (data) => {
-return new Promise((resolve, rejects) => {
-const resultado = data.match(/\(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,}\gi/gm);
-//console.log(resultado);
-if (resultado) {
-resolve(validationLinks(resultado));
-} else {
-  rejects(console.log(error))
-}
-})
+  return new Promise((resolve, rejects) => {
+  const resultado = data.match(/\(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,}\gi/gm);
+  if (resultado) {
+    resolve(validationLinks(resultado));
+  } else {
+    rejects(console.log(error))
+  }
+  });
 }
 
 //Validar links.
@@ -46,7 +45,7 @@ const validationLinks = (resultado) => {
       //console.log(newLinks);
       linksFetch(newLinks);
   });
-  // statsStadistics(resultado);
+return resultado
 }
 
 const parsePath = path.parse(__filename);
@@ -55,12 +54,10 @@ const dirPath = parsePath.dir;
 const linksFetch = (link) => {
   const arrayLinks = [];
   arrayLinks.push(link);
-  // statsStadistics(arrayLinks);
   arrayLinks.map(() => {
   fetch(arrayLinks,get)
     .then((res) => {
-        validateStatus(res, link);
-        //statsStadistics(arrayLinks);
+      validateStatus(res, link);
      }
     )
     .catch(
@@ -69,6 +66,7 @@ const linksFetch = (link) => {
     })
 } 
 
+// Objeto de la validación de los links. 
 const validateStatus = (res, link) => {
   if(res.statusText === 'OK') {
     console.log({path: dirPath, status: res.status, statusText: 'OK', url:link})
@@ -76,14 +74,23 @@ const validateStatus = (res, link) => {
     console.log({path: dirPath, status: res.status, statusText: 'FAIL', url:link})
   }
 }
-
-const statsStadistics = (links) => {
-  let linksFine = [];
+// Links unicos.
+const uniqueLinks = (arrayLinks) => {
+  let allLinks = arrayLinks.map((infoLink) => {return infoLink.url});
+  let uniqueLinks = allLinks.filter((item, index)=> allLinks.indexOf(item) === index);
+  return uniqueLinks;
+}
+// Estadistica de los links.
+const statsStadistics = (arrayLinks) => {
+  let theUnique = uniqueLinks(arrayLinks);
+  let onlyLinks = [];
+  let linksFine =[];
   let linksBad = [];
   let totalLinks = [];
   let result = {};
-  links.forEach((link) => {
+  arrayLinks.forEach((link) => {
     totalLinks.push(link);
+    onlyLinks.push(theUnique);
     if (link.statusText === 'OK') {
       linksFine.push(link);
     } else if (link.statusText === 'FAIL') {
@@ -92,6 +99,7 @@ const statsStadistics = (links) => {
   });
   result = {
     Correct: linksFine.length,
+    Unique: onlyLinks.length,
     Broken: linksBad.length,
     total: totalLinks.length,
   }
@@ -110,11 +118,13 @@ const readFiles = (file) => {
   const datafile = fs.readFileSync(`${path.join(pathDir, file)}`, 'utf8')
   getLinks(datafile)
     .then((arrayLinks) => {
+      console.log(arrayLinks, 'perritos');
       const stats = statsStadistics(arrayLinks);
       return Promise.all(stats);
+    }).then((res)=> {
+      console.log(res, 'gatitos')
     })
-    .catch((err) => console.log(err));  
-  return getLinks(datafile)
+    .catch((err) => console.log(err, 'error de promesa'));  
 }
 
 
