@@ -25,12 +25,13 @@ return resultado;
 }
 
 //Validar links.
-const validationLinks = (getLinks) => {
-  getLinks().forEach((link) => {
+const validationLinks = (data) => {
+  getLinks(data).forEach((link) => {
       const newLinks = link.slice(1,40);
       //console.log(newLinks);
       linksFetch(newLinks);
   });
+  return validationLinks(getLinks,data);
 }
 
 // Path en objeto de validación de Links.S
@@ -104,23 +105,21 @@ const statsStadistics = (arrayLinks) => {
 
 //leer archivo.
 const readFiles = (file) => {
-  const filesWithRead = fs.readFileSync(file, 'utf8')
-  .then((data) => {getLinks(data)})
-  .catch((err)=> {console.log(err)});
-  return filesWithRead
+  const filesWithRead = fs.readFileSync(file, 'utf8');
+  const links = getLinks(filesWithRead);
+  return console.log(links);
 }
 
 
 // Lectura de archivo de carpetas.
 const filesDir = (files) => {
-  const extension = path.extname(file);
-	const dirWithRead = fs.readdirSync(files, 'utf-8')
-  .then((data) => {
-  console.log(data);
-  data.forEach((file) => {
+	const dirWithRead = fs.readdirSync(files, 'utf-8');
+  console.log(dirWithRead);
+  dirWithRead.forEach((file) => {
     if (file === undefined) {
       console.log('Ingresa el archivo')
     } else {
+      const extension = path.extname(file);
       if (extension === '.md') {
         // manipular cada archivo.
         console.log(file.bgRed);
@@ -132,9 +131,7 @@ const filesDir = (files) => {
         return false; 
       };     
     };
-  })
-  }).catch((err) => console.log(err))
-  return dirWithRead;  
+  }) 
 }
 //return filesDir()
 
@@ -160,9 +157,9 @@ return onlyPath()
 // const pathValidate = (files) => {
 //   return new Promise ((resolve, reject) => {
 //     if (path.extname(files) === '.md') {
-//       const archivesRead = fs.readFileSync(files, 'utf8')
-//       .then((data) => {getLinks(data)});
-//       resolve(archivesRead)
+//       const archivesRead = fs.readFileSync(files, 'utf8');
+//       const links = getLinks(archivesRead);
+//       resolve(links)
 //     } else if (searchDir(files)) {
 //       reject(filesDir(files));
 //     }
