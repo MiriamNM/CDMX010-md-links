@@ -1,21 +1,28 @@
-const isMdOrNot = require('./functions.js');
-const filesDir = require('./functions.js');
-const readFiles = require('./functions');
-const colors = require('colors');
-const path = require('path');
-const fs = require('fs');
-const fetch = require('node-fetch');
-const { get } = require('http');
-const { url } = require('inspector');
-const { Console } = require('console');
-const { resolveAny } = require('dns');
+const onlyPath = require('./functions.js');
+const pathValidate = require('./functions.js');
+const pathStat = require('./functions.js');
+const process = require('process');
 
-module.exports = () => {
-    // ...
-  
-  };
-
+const path = 'C:/Users/hp/Documents/Laboratoria/CDMX010-md-links/documentos';
+const options = {
+  one: process.argv[2],
+  two: process.argv[3],
+  three: process.argv[4],
+}
 const mdLinks = (path, options) => {
+  switch (options) {
+  case '--stats':
+      pathStat(path)
+  break;
+  case '--validate':
+    pathValidate(path)
+  break;
+  case '--stats --validate':
+    pathStat(path)
+  break;
+  default: 
+    onlyPath(path)
+  }
+}
+mdLinks(path, options);
 
-};
-return mdLinks();

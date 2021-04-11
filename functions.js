@@ -11,32 +11,33 @@ const { rejects } = require('assert');
 // Path.
 const archivePath = 'C:/Users/hp/Documents/Laboratoria/CDMX010-md-links/documentos';
 
-// Ruta.
-const way = (file) => {
-const join = archivePath;
-const joinFile = file;
-console.log(`link: ${path.join(join, joinFile)}`.bgGreen);
-} 
-
 // Obtener los links.
 const getLinks = (data) => {
-const resultado = data.match(/\(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,}\gi/gm);
+const resultado = data.match(/\bhttps?:\/\/\S+/gi);
 return resultado;
 }
 
+// Función que une getLinks  y validationLinks.
+const validateLinks = (data) => {
+  return new Promise((resolve, rejects) => {
+    const resultado = data.match(/\bhttps?:\/\/\S+/gi);
+    if (resultado) {
+      resolve(validationLinks(resultado));
+    } else {
+      rejects(console.log(error))
+    }
+    });
+}
+
 //Validar links.
-const validationLinks = (data) => {
-  getLinks(data).forEach((link) => {
-      const newLinks = link.slice(1,40);
+const validationLinks = (resultado) => {
+  resultado.forEach((link) => {
+      const newLinks = link.replace(/[{()}]/g, '');
       //console.log(newLinks);
       linksFetch(newLinks);
   });
-  return validationLinks(getLinks,data);
+  return resultado
 }
-
-// Path en objeto de validación de Links.S
-const parsePath = path.parse(__filename);
-const dirPath = parsePath.dir;
 
 // Fetch para obtener validación de los Links.
 const linksFetch = (link) => {
@@ -54,6 +55,10 @@ const linksFetch = (link) => {
     })
 } 
 
+// Path en objeto de validación de Links.S
+const parsePath = path.parse(__filename);
+const dirPath = parsePath.dir;
+
 // Objeto de la validación de los links. 
 const validateStatus = (res, link) => {
   if(res.statusText === 'OK') {
@@ -63,60 +68,33 @@ const validateStatus = (res, link) => {
   }
 }
 
-// Links unicos.
-const uniqueLinks = (arrayLinks) => {
-	let allLinks = arrayLinks.map((infoLink) => {return infoLink.url});
-	let uniqueLinks = allLinks.filter((item, index)=> allLinks.indexOf(item) === index);
-	return uniqueLinks;
-}
-
 // Estadistica de los links.
 const statsStadistics = (arrayLinks) => {
-  let theUnique = uniqueLinks(arrayLinks);
-  let onlyLinks = [];
-  let linksFine =[];
   let linksBad = [];
   let totalLinks = [];
   let result = {};
   arrayLinks.forEach((link) => {
     totalLinks.push(link);
-    onlyLinks.push(theUnique);
-    if (link.statusText === 'OK') {
-      linksFine.push(link);
-    } else if (link.statusText === 'FAIL') {
+    if (link.status !== '200') {
       linksBad.push(link)
     }
   });
   result = {
-    Correct: linksFine.length,
-    Unique: onlyLinks.length,
     Broken: linksBad.length,
+    Unique: [...new Set(totalLinks)].length,
     total: totalLinks.length,
   }
   console.log(result);
   return result;
-  // let linksOK = arrayLinks.filter(arrayLink => arrayLink.statusText === 'OK');
-  // let oks = linksFine.push(linksOK);
-  // let linksFail = arrayLinks.filter(arrayLink => arrayLink.statusText === 'FAIL');
-  // let fails = linksBad.push(linksFail);
-  // console.log('Correct:', oks.length);
-  // console.log('Broken:', fails.length);
 }
 
 //leer archivo INDIVIDUAL.
 const readFile = (file) => {
-  const filesWithRead = fs.readFileSync(file, 'utf8');
-  const links = getLinks(filesWithRead);
-  return console.log(links);
-}
-
-//leer archivo.
-const readFiles = (file) => {
   const filesWithRead = fs.readFileSync(path.join(archivePath, file), 'utf8');
+  console.log(filesWithRead);
   const links = getLinks(filesWithRead);
   return console.log(links);
 }
-
 
 // Lectura de archivo de carpetas.
 const filesDir = (files) => {
@@ -130,9 +108,75 @@ const filesDir = (files) => {
       if (extension === '.md') {
         // manipular cada archivo.
         console.log(file.bgRed);
-        way(file);
         // leer cada archivo.
-        readFiles(file)
+        readFile(file)
+      } else {
+        console.log('Este no es un archivo .md');
+        return false; 
+      };     
+    };
+  }) 
+}
+//return filesDir()
+
+//leer archivo.
+const readFilePromisse = (file) => {
+  const filesWithRead = fs.readFileSync(path.join(archivePath, file), 'utf8');
+  const valideLinks = validateLinks(filesWithRead);
+  return console.log(valideLinks);
+}
+
+// Lectura de archivo de carpetas con promesa.
+const filesDirPromisse = (files) => {
+	const dirWithRead = fs.readdirSync(files, 'utf-8');
+  console.log(dirWithRead);
+  dirWithRead.forEach((file) => {
+    if (file === undefined) {
+      console.log('Ingresa el archivo')
+    } else {
+      const extension = path.extname(file);
+      if (extension === '.md') {
+        // manipular cada archivo.
+        console.log(file.bgRed);
+        // leer cada archivo.
+        readFilePromisse(file)
+      } else {
+        console.log('Este no es un archivo .md');
+        return false; 
+      };     
+    };
+  }) 
+}
+
+//return filesDir()
+
+//leer archivo con promesa stats
+const readFilePromisseStat = (file) => {
+  const filesWithRead = fs.readFileSync(path.join(archivePath, file), 'utf8');
+  validateLinks(filesWithRead)
+    .then((arrayLinks) => {
+      const stats = statsStadistics(arrayLinks);
+      return Promise.all(stats);
+    }).then((res)=> {
+      console.log(res)
+    })
+    .catch((err) => console.log(err));
+}
+
+// Lectura de archivo de carpetas con promesa stats
+const filesDirPromisseStat = (files) => {
+	const dirWithRead = fs.readdirSync(files, 'utf-8');
+  console.log(dirWithRead);
+  dirWithRead.forEach((file) => {
+    if (file === undefined) {
+      console.log('Ingresa el archivo')
+    } else {
+      const extension = path.extname(file);
+      if (extension === '.md') {
+        // manipular cada archivo.
+        //console.log(file.bgRed);
+        // leer cada archivo.
+        readFilePromisseStat(file)
       } else {
         console.log('Este no es un archivo .md');
         return false; 
@@ -144,9 +188,9 @@ const filesDir = (files) => {
 
 //Busca si el path es carpeta.
 const searchDir = (files) => {
-const expression = /^(.+)\/([^\/]+)$/m;
-const result = files.match(expression);
-return result;
+  const expression = /^(.+)\/([^\/]+)$/m;
+  const result = files.match(expression);
+  return result;
 }
 
 //cuando solo ponen path
@@ -157,39 +201,35 @@ const onlyPath = (files) => {
   } else if (searchDir(files)) {
     return (filesDir(files))
   }
+  return
 }
-return onlyPath()
+//return onlyPath(archivePath)
 
 // Cuando ponen path y validate.
-// const pathValidate = (files) => {
-//   return new Promise ((resolve, reject) => {
-//     if (path.extname(files) === '.md') {
-//       resolve(readFile(files))
-//     } else if (searchDir(files)) {
-//       reject(filesDir(files));
-//     }
-//   })};
-//  return Promise.all(pathValidate(archivePath))
-//   .then((res)=> {
-//     validationLinks(res)
-//   })
-//   .catch((err)=> {
-//     return err
-//   });
+const pathValidate = (files) => {
+  const extension = path.extname(files);
+  if (extension === '.md') {
+    return (readFilePromisse(files))
+  } else if (searchDir(files)) {
+    return (filesDirPromisse(files))
+  }
+  return
+}
+//return pathValidate(archivePath)
 
+// Cuando ponen path y validate.
+const pathStat = (files) => {
+  const extension = path.extname(files);
+  if (extension === '.md') {
+    return (readFilePromisseStat(files))
+  } else if (searchDir(files)) {
+    return (filesDirPromisseStat(files))
+  }
+  return
+}
+//return pathStat(archivePath)
 
-// Cuando ponen path stats y validate.
-// const pathValidate = (files) => {
-//   return new Promise ((resolve, reject) => {
-//     if (path.extname(files) === '.md') {
-//       resolve(readFile(files));
-//     } else if (searchDir(files)) {
-//       reject(filesDir(files));
-//     }
-//   })};
-//  pathValidate(archivePath)
-//     .then((res)=>{
-//       validationLinks(res)
-//       return Promise.all(res)
-//     })
-//     .catch((err)=>{console.log(err)});
+module.exports = {onlyPath: onlyPath};
+module.exports = {pathValidate: pathValidate};
+module.exports = {pathStat: pathStat};
+module.exports = {getLinks: getLinks};
