@@ -17,30 +17,6 @@ const comands = {
 }
 console.log('myArgs: ', comands);
 
-const argOptions = (arg1, arg2) => {
-  const validate= comands['validate'];
-  const stats = comands['stats'];
-  
-  options = {
-  comands,stats: false,
-  comands,validate: false
-  }
-
-  if(arg1 === '--validate' || arg1 === '-v') {
-    options.validate = true
-  } 
-  if (arg2 === '--stats' || arg2 === '-s') {
-    options.stats = true
-  }
-  console.log(options);
-  return options
-}
-
-argOptions('--validate', null);
-argOptions('--validate', '--stats');
-argOptions(null, '--stats');
-argOptions(null, null);
-
 // Obtener los links.
 const getLinks = (data) => {
 const resultado = data.match(/\bhttps?:\/\/\S+/gi);
@@ -88,30 +64,34 @@ const linksFetch = (link) => {
 // Objeto de la validación de los links. 
 const validateStatus = (res, link) => {
   if(res.statusText === 'OK') {
-    console.log({path: dirPath, status: res.status, statusText: 'OK', url:link})
+    console.log({path: path.resolve(link), status: res.status, statusText: 'OK', url:link})
   } else {
-    console.log({path: dirPath, status: res.status, statusText: 'FAIL', url:link})
+    console.log({path: path.resolve(link), status: res.status, statusText: 'FAIL', url:link})
   }
 }
 
 // Estadistica de los links.
 const statsStadistics = (arrayLinks) => {
   let linksBad = [];
-  let totalLinks = [];
-  let result = {};
-  arrayLinks.forEach((link) => {
-    totalLinks.push(link);
-    if (link.status !== '200') {
+  let result = {}
+  arrayLinks.forEach((res, link) => {
+    if (res.statusText !== 'OK') {
       linksBad.push(link)
     }
   });
   result = {
     Broken: linksBad.length,
-    Unique: [...new Set(totalLinks)].length,
-    total: totalLinks.length,
+    Unique: [...new Set(arrayLinks)].length,
+    total: arrayLinks.length,
   }
   console.log(resultado);
   return result;
+}
+
+const absolutPath = (files, file) => {
+  const thePath = path.resolve(files);
+  const joinPath = path.join(thePath, file);
+  return joinPath
 }
 
 // Dice si es carpeta o no.
@@ -128,9 +108,8 @@ const readFile = (file) => {
 }
 
 // Leer un archivo de directorio
-const readFileDir = (file) => {
-  const absolutPath = path.resolve(files);
-  const filesWithRead = fs.readFileSync(path.join(absolutPath, file), 'utf8');
+const readFileDir = (files, file) => {
+  const filesWithRead = fs.readFileSync(absolutPath(files, file), 'utf8');
   return filesWithRead;
 }
 
@@ -148,18 +127,9 @@ const onlyFile = (file) => {
     const extension = path.extname(file);
     if (extension === '.md') {
       const content = readFile(file);
-      if (argOptions === ('--v' || '--validate')) {
+      if (comands['validate'] === '--v' || comands['validate'] === '--validate') {
         return validateLinks(content)
-      } else if (argOptions === ('--s' || '--stats')) {
-        validateLinks(content)
-          .then((arrayLinks) => {
-            const stats = statsStadistics(arrayLinks);
-            return Promise.all(stats);
-          }).then((res)=> {
-            console.log(res)
-          })
-          .catch((err) => console.log(err));
-      } else if (argOptions === ('--v','--s' && '--validate','--stats')) {
+      } else if (comands['stats'] === '--s' || comands['stats'] === '--stats') {
         validateLinks(content)
           .then((arrayLinks) => {
             const stats = statsStadistics(arrayLinks);
@@ -181,36 +151,29 @@ const onlyFile = (file) => {
 // Función para una carpeta.
 const isDir = (files) => {
   const contentDir = filesDir(files);
+  console.log(contentDir, 'gatitos');
   contentDir.forEach((file) => {
     if (file === undefined) {
       console.log('Ingresa el archivo')
     } else {
       const extension = path.extname(file);
       if (extension === '.md') {
-        const content = readFileDir(file);
-      if (controller === '--v' || '--validate') {
-        return validateLinks(content)
-      } else if (controller === '--s' || '--stats') {
-        validateLinks(content)
-          .then((arrayLinks) => {
-            const stats = statsStadistics(arrayLinks);
-            return Promise.all(stats);
-          }).then((res)=> {
-            console.log(res)
-          })
-          .catch((err) => console.log(err));
-      } else if (controller === '--v' && '--s' || '--validate' && '--stats') {
-        validateLinks(content)
-          .then((arrayLinks) => {
-            const stats = statsStadistics(arrayLinks);
-            return Promise.all(stats);
-          }).then((res)=> {
-            console.log(res)
-          })
-          .catch((err) => console.log(err));
-      } else {
-        return getLinks(content);
-      }
+        const content = readFileDir(files, file);
+        if (comands['validate'] === '--v' || comands['validate'] === '--validate') {
+          return validateLinks(content)
+        } else if (comands['stats'] === '--s' || comands['stats'] === '--stats') {
+          validateLinks(content)
+            .then((arrayLinks) => {
+              console.log(arrayLinks, 'perritos');
+              const stats = statsStadistics(arrayLinks);
+              return Promise.all(stats);
+            }).then((res)=> {
+              console.log(res, 'ay no')
+            })
+            .catch((err) => console.log(err));
+        }  else {
+          return getLinks(content);
+        }
       } else {
         console.log('Este no es un archivo .md');
         return false; 
@@ -220,17 +183,21 @@ const isDir = (files) => {
 }
 
 // Función MDLinks
-MDLinks = (files) => {
+MDLinks = (files, options) => {
   const extension = path.extname(files);
   if (extension === '.md') {
       return (onlyFile(files));
   } else if (searchDir(files)) {
       return (isDir(files));
   } 
+
+  options('--validate', null);
+  options('--validate', '--stats');
+  options(null, '--stats');
+  options(null, null);  
+  return
 }
-
-MDLinks('./documentos/doc1.md')
-
+MDLinks(comands['path'],(comands['stats']&&comands['validate']))
 // module.exports = {onlyFile: onlyFile};
 // module.exports = {isDir: isDir};
 // module.exports = {searchDir: searchDir};
