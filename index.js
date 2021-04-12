@@ -1,28 +1,17 @@
-const onlyPath = require('./functions.js');
-const pathValidate = require('./functions.js');
-const pathStat = require('./functions.js');
-const process = require('process');
+/* eslint-disable no-undef */
+const mdLinks = require('./mdLinks');
+const path = require('path');
+const searchDir = require('./mdLinks.js');
+const onlyFile = require('./mdLinks.js');
+const isDir = require('./mdLinks.js');
 
-const path = 'C:/Users/hp/Documents/Laboratoria/CDMX010-md-links/documentos';
-const options = {
-  one: process.argv[2],
-  two: process.argv[3],
-  three: process.argv[4],
+module.exports = MDLinks = (files) => {
+    const extension = path.extname(files);
+    if (extension === '.md') {
+        return (onlyFile(files));
+    } else if (searchDir(files)) {
+        return (isDir(files));
+    } 
 }
-const mdLinks = (path, options) => {
-  switch (options) {
-  case '--stats':
-      pathStat(path)
-  break;
-  case '--validate':
-    pathValidate(path)
-  break;
-  case '--stats --validate':
-    pathStat(path)
-  break;
-  default: 
-    onlyPath(path)
-  }
-}
-mdLinks(path, options);
 
+MDLinks('./documentos')

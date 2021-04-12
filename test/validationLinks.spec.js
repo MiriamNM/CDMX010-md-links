@@ -1,4 +1,4 @@
-const validationLinks = require('./../functions');
+const validationLinks = require('./../mdLinks.js');
 
 describe('Obtener los links validados', () => {
   it('deberia ser una const', () => {
