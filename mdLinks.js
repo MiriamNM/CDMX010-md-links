@@ -82,34 +82,21 @@ const statsStadistics = (arrayLinks) => {
 }
 
 //para tener la ruta absoluta del archivo de la carpeta.
-const absolutPath = (files, file) => {
-  const extension = path.extname(file);
-  if (extension === '.md') {
-    return file; 
-  } else if (searchDir(files)) {
-    const thePath = path.resolve(files);
-    const joinPath = path.join(thePath, file);
-    return joinPath
-  }  
-  
-}
-
-// Dice si es carpeta o no.
-const searchDir = (files) => {
-  const expression = /^(.+)\/([^\/]+)$/m;
-  const result = files.match(expression);
-  return result;
-}
-
-// leer archivo INDIVIDUAL.
-// const readFile = (file) => {
-//   const filesWithRead = fs.readFileSync(absolutPath, 'utf8');
-//   return filesWithRead;
+// const absolutPath = (files, file) => {
+//   if (===false) {
+//     return file; 
+//   } else {
+//     const thePath = path.resolve(files);
+//     const joinPath = path.join(thePath, file);
+//     return joinPath
+//   }   
 // }
 
-// Leer un archivo de directorio
-const readFile = (files, file) => {
-  const filesWithRead = fs.readFileSync(absolutPath(files, file), 'utf8');
+//leer archivo INDIVIDUAL.
+const readFile = (file) => {
+  console.log(file,'es file');
+  const filesWithRead = fs.readFileSync(file, 'utf8');
+  console.log(filesWithRead);
   return filesWithRead;
 }
 
@@ -198,24 +185,24 @@ const filesDir = (files) => {
 
 const mds = (filePath) => {
   let md = [];
-  const extension = path.extname(filePath);
-  if (extension === '.md') {
-    let arr = md.push(filePath); 
-    console.log(arr, 'cerditos');   
-  } else if (searchDir(filePath)) {
+  if (fs.statSync(filePath).isDirectory()) {
     const files = filesDir(filePath);
-    console.log(files);
-    files.forEach((file) => {
-      if (extension === '.md') {
-        console.log(file,'pingüinos');
-        let arr = md.push(file);
-        console.log(arr, 'campanita');
-        
-      } else {
-      console.log('No es .md')
-      }
-    })
-  } 
+        console.log(files);
+        files.forEach((file) => {
+          console.log(file);
+          if (path.extname(file) === '.md') {
+            console.log(file,'pingüinos');
+            const mdDir = path.join(filePath,file)
+            md= md.concat(mdDir);
+            console.log(md, 'campanita');
+          } else {
+          console.log('No es .md')
+          }
+        })
+  } else if (path.extname(filePath) === '.md') {
+    md= md.push(filePath); 
+    console.log(md, 'cerditos');  
+  }
   console.log(md, 'patito')
   return md
 }
@@ -224,19 +211,31 @@ const mds = (filePath) => {
 // FUNCIÓN DE MDLINKS, NO DEBE IR AQUÍ PERO AUN NO SE MODULAR BIEN.
 MDLinks = (filesPath, options) => {
   const md = mds(filesPath);
-  const links = getLinks(md);
-      if (comands['validate'] === '--v' || comands['validate'] === '--validate') {
-        return validateLinks(links)
-      } else if (comands['stats'] === '--s' || comands['stats'] === '--stats') {
-        return statsStadistics(links)
-      } else {
-        return links;
-      }
-  options('--validate', null);
-  options('--validate', '--stats');
-  options(null, '--stats');
-  options(null, null);  
-  
+  const strings = md.toString();
+  console.log(strings, 'QUESOO')
+  console.log(md, 'buuu');
+  console.log(path.resolve(md), 'pajatidos')
+  console.log(path.resolve(filesPath), 'holooo')
+  //console.log(path.isAbsolute(filesPath));
+  console.log(md, 'gancitos');
+  md.forEach((fileMd) => {
+    console.log(path.resolve(fileMd), 'holiii')
+    const readMd = readFile(fileMd);
+    return readMd
+  })
+  //const links = getLinks(md);
+  //     if (comands['validate'] === '--v' || comands['validate'] === '--validate') {
+  //       return validateLinks(links)
+  //     } else if (comands['stats'] === '--s' || comands['stats'] === '--stats') {
+  //       return statsStadistics(links)
+  //     } else {
+  //       return links;
+  //     }
+  // options('--validate', null);
+  // options('--validate', '--stats');
+  // options(null, '--stats');
+  // options(null, null);  
+  return md
 }
 MDLinks(comands['path'],(comands['stats']&&comands['validate']))
 // module.exports = {isFile: isFile};
