@@ -1,13 +1,14 @@
+const filesDir = require('./../mdLinks.js');
 const fs = require('fs');
 
-const readdir= () => {fs.readdirSync('./../documentos', 'utf-8')};
+//const filesDir= () => {fs.filesDirSync('./../documentos', 'utf-8')};
 
 describe('Obtener contenido del directorio', () => {
   it('deberia ser una const', () => {
-    expect(readdir).toBeDefined();
+    expect(filesDir).toBeDefined();
   });
-  it('Deberia de ser una función', () => {
-    expect(typeof readdir).toBe('function');
+  it('Deberia de ser un objeto', () => {
+    expect(typeof filesDir).toBe('object');
   });
   it('Si retorna el contenido', () => {
     expect([

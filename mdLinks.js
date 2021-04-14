@@ -5,6 +5,9 @@ const fetch = require('node-fetch');
 const { get } = require('http');
 //const controller = require('./controller.js');
 const process = require('process');
+const { rejects } = require('assert');
+const { resolve } = require('path');
+const { error } = require('console');
 //const MDLinks = require('./index.js');
 
 // FUNCIÓN DE CLI, NO DEBE IR AQUÍ PERO AUN NO SE MODULAR BIEN.
@@ -13,8 +16,8 @@ const comands = {
   node: cliCommand[0],
   mdLinks: cliCommand[1],
   path: cliCommand[2],
-  stats: cliCommand[3],
-  validate: cliCommand[4],
+  validate: cliCommand[3],
+  stats: cliCommand[4],
 }
 console.log('myArgs: ', comands);
 
@@ -26,16 +29,17 @@ return resultado;
 
 //Validar links.
 const validationLinks = (md) => {
-  console.log(md, 'ronny bebe');
   md.forEach((link) => {
     const linkMap = link.replace(/[{()}]/g, '');
-    fetch(md,get)
+    console.log(linkMap, 'hola')
+    fetch(md)
       .then((res) => {
-        if(res.status !== 200) {
-          console.log({path: path.resolve(linkMap), status: res.status, statusText: 'FAIL', url:linkMap});
-        } else {
-          console.log({path: path.resolve(linkMap), status: res.status, statusText: 'OK', url:linkMap});
-        }
+        console.log(res,'gatito');
+        // if(res.status === 200) {
+        //   console.log({path: path.resolve(linkMap), status: res.status, statusText: 'FAIL', url:linkMap});
+        // } else {
+        //   console.log({path: path.resolve(linkMap), status: res.status, statusText: 'OK', url:linkMap});
+        // }
       })
       .catch(
         (error) => console.log(error)
@@ -51,15 +55,9 @@ const statsStadistics = (resultado) => {
   let result = {}
   resultado.forEach((link) => {
     linksTotal.push(link);
-    fetch(linksTotal,get)
-      .then((res) => {
-        if(res.status !== 200) {
+    if(res.status !== 200) {
           linksBad.push(link);
-        } 
-      })
-      .catch(
-        (error) => console.log(error)
-      );
+        }
     console.log(result, 'wiiiii');
     result = {
       Broken: linksBad.length,
@@ -96,40 +94,50 @@ const mds = (filePath) => {
           if (path.extname(file) === '.md') {
             const mdDir = path.join(filePath,file)
             md= md.concat(mdDir);
-            console.log(md, 'campanita');
           } else {
           console.log('No es .md')
           }
         })
   } else if (path.extname(filePath) === '.md') {
     md= md.concat(filePath); 
-    console.log(md, 'cerditos');  
   }
-  return md
+  console.log(md, 'vaca')
+  return (md)
 }
 
-// FUNCIÓN DE MDLINKS, NO DEBE IR AQUÍ PERO AUN NO SE MODULAR BIEN.
-MDLinks = (filesPath, options) => {
-  const md = mds(filesPath);
+const promiseMDLinks = (data) => {
+  return new Promise((resolve, rejects) => {
+  const md = mds(data);
   md.forEach((fileMd) => {
     const readMd = readFile(fileMd);
     const getLinksMd = getLinks(readMd);
-    if (comands['validate'] === '--v' || comands['validate'] === '--validate') {
-      return validationLinks(getLinksMd);}
-    if (comands['stats'] === '--s' || comands['stats'] === '--stats') {
-      console.log(statsStadistics(getLinksMd), 'linceee')
-      return statsStadistics(getLinksMd);
-    } else {
-      return getLinksMd;
-    } 
+    resolve(getLinksMd);
   })
+  rejects(error);
+  });
+}  
+// FUNCIÓN DE MDLINKS, NO DEBE IR AQUÍ PERO AUN NO SE MODULAR BIEN.
+MDLinks = (filesPath, options) => {
+  promiseMDLinks(filesPath)
+    .then((getLinksMd) => {
+      if (comands['validate'] === '--v' || comands['validate'] === '--validate') {
+      return Promise.all(validationLinks(getLinksMd));
+      }
+    })
+    .then((res) => {
+      if (comands['stats'] === '--s' || comands['stats'] === '--stats') {
+        return Promise.all(statsStadistics(res));
+      } 
+    })
+    .then((res) => {console.log(res, 'patito')})
+    .catch(() => {});
+    
   // options('--validate', null);
   // options('--validate', '--stats');
   // options(null, '--stats');
-  // options(null, null);  
-  return 
+  // options(null, null);   
 }
-MDLinks(comands['path'],(comands['stats']&&comands['validate']))
+MDLinks(comands['path'],(comands['validate']&&comands['stats']))
 // module.exports = {isFile: isFile};
 // module.exports = {isDir: isDir};
 // module.exports = {searchDir: searchDir};
