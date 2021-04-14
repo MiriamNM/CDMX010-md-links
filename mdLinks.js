@@ -24,73 +24,53 @@ const resultado = data.match(/\bhttps?:\/\/\S+/gi);
 return resultado;
 }
 
-// Función que une getLinks  y validationLinks.
-const validateLinks = (data) => {
-  return new Promise((resolve, rejects) => {
-    const resultado = data.match(/\bhttps?:\/\/\S+/gi);
-    if (resultado) {
-      resolve(validationLinks(resultado));
-    } else {
-      rejects(console.log(error))
-    }
-    });
-}
-
 //Validar links.
-const validationLinks = (resultado) => {
-  resultado.map((link) => {
-    // const newLinks = link.replace(/[{()}]/g, '');
-    // arrayLinks.push(newLinks);
-    //console.log(newLinks);
-  
-    //arrayLinks.map(() => {
-      fetch(resultado,get)
-        .then((res) => {
-          if(res.statusText === 'OK') {
-            return {path: path.resolve(link), status: res.status, statusText: 'OK', url:link}
-          } else {
-            return {path: path.resolve(link), status: res.status, statusText: 'FAIL', url:link}
-          }
-        })
-        .catch(
-          (error) => console.log(error)
-        )
-      //})
+const validationLinks = (md) => {
+  console.log(md, 'ronny bebe');
+  md.forEach((link) => {
+    const linkMap = link.replace(/[{()}]/g, '');
+    fetch(md,get)
+      .then((res) => {
+        if(res.status !== 200) {
+          console.log({path: path.resolve(linkMap), status: res.status, statusText: 'FAIL', url:linkMap});
+        } else {
+          console.log({path: path.resolve(linkMap), status: res.status, statusText: 'OK', url:linkMap});
+        }
+      })
+      .catch(
+        (error) => console.log(error)
+      )
   });
-  return resultado
+ return md;
 } 
 
-// Objeto de la validación de los links. 
-
-
 // Estadistica de los links.
-const statsStadistics = (arrayLinks) => {
+const statsStadistics = (resultado) => {
+  let linksTotal = [];
   let linksBad = [];
   let result = {}
-  arrayLinks.forEach((res, link) => {
-    if (res.statusText !== 'OK') {
-      linksBad.push(link)
+  resultado.forEach((link) => {
+    linksTotal.push(link);
+    fetch(linksTotal,get)
+      .then((res) => {
+        if(res.status !== 200) {
+          linksBad.push(link);
+        } 
+      })
+      .catch(
+        (error) => console.log(error)
+      );
+    console.log(result, 'wiiiii');
+    result = {
+      Broken: linksBad.length,
+      Unique: [...new Set(linksTotal)].length,
+      total: linksTotal.length,
     }
+    console.log(resultado, 'si toy');
+    return resultado;
   });
-  result = {
-    Broken: linksBad.length,
-    Unique: [...new Set(arrayLinks)].length,
-    total: arrayLinks.length,
-  }
-  console.log(resultado);
-  return result;
+  
 }
-
-//para tener la ruta absoluta del archivo de la carpeta.
-// const absolutPath = (files, file) => {
-//   if (===false) {
-//     return file; 
-//   } else {
-//     const thePath = path.resolve(files);
-//     const joinPath = path.join(thePath, file);
-//     return joinPath
-//   }   
-// }
 
 //leer archivo INDIVIDUAL.
 const readFile = (file) => {
@@ -106,92 +86,14 @@ const filesDir = (files) => {
   return dirWithRead;
 }
 
-// Función para un archivo.
-// const isFile = (file) => {
-//   if (file === undefined) {
-//     console.log('Ingresa el archivo')
-//   } else {
-//     const extension = path.extname(file);
-//     if (extension === '.md') {
-//       const content = readFile(file);
-//       if (comands['validate'] === '--v' || comands['validate'] === '--validate') {
-//         return validateLinks(content)
-//       } else if (comands['stats'] === '--s' || comands['stats'] === '--stats') {
-//         validateLinks(content)
-//           .then((arrayLinks) => {
-//             const stats = statsStadistics(arrayLinks);
-//             return Promise.all(stats);
-//           }).then((res)=> {
-//             console.log(res)
-//           })
-//           .catch((err) => console.log(err));
-//       } else {
-//         return getLinks(content);
-//       }
-//     } else {
-//       console.log('Solo archivos .md');
-//       return false; 
-//     }; 
-// }  
-// }
-
-
-
-// Función para una carpeta.
-// const isDir = (files) => {
-//   const contentDir = filesDir(files);
-//   console.log(contentDir, 'gatitos');
-//   contentDir.forEach((file) => {
-//     if (file === undefined) {
-//       console.log('Ingresa el archivo')
-//     } else {
-//       const extension = path.extname(file);
-//       if (extension === '.md') {
-//         const content = readFileDir(files, file);
-//         if (comands['validate'] === '--v' || comands['validate'] === '--validate') {
-//           return validateLinks(content)
-//         } else if (comands['stats'] === '--s' || comands['stats'] === '--stats') {
-//           validateLinks(content)
-//             .then((arrayLinks) => {
-//               console.log(arrayLinks, 'perritos');
-//               const stats = statsStadistics(arrayLinks);
-//               return Promise.all(stats);
-//             }).then((res)=> {
-//               console.log(res, 'ay')
-//             })
-//             .catch((err) => console.log(err));
-//         }  else {
-//           return getLinks(content);
-//         }
-//       } else {
-//         console.log('Este no es un archivo .md');
-//         return false; 
-//       };     
-//     };
-//   }) 
-// }
-
-// const readArchive = (md) => {
-//   const content = readFile(md);
-//   const links = getLinks(content);
-//       if (comands['validate'] === '--v' || comands['validate'] === '--validate') {
-//         return validateLinks(links)
-//       } else if (comands['stats'] === '--s' || comands['stats'] === '--stats') {
-//         return statsStadistics(links)
-//       } else {
-//         return getLinks(content);
-//       }
-// }
-
+// función para poner los archivos md en un array.
 const mds = (filePath) => {
   let md = [];
   if (fs.statSync(filePath).isDirectory()) {
     const files = filesDir(filePath);
-        console.log(files);
         files.forEach((file) => {
           console.log(file);
           if (path.extname(file) === '.md') {
-            console.log(file,'pingüinos');
             const mdDir = path.join(filePath,file)
             md= md.concat(mdDir);
             console.log(md, 'campanita');
@@ -200,45 +102,34 @@ const mds = (filePath) => {
           }
         })
   } else if (path.extname(filePath) === '.md') {
-    md= md.push(filePath); 
+    md= md.concat(filePath); 
     console.log(md, 'cerditos');  
   }
-  console.log(md, 'patito')
   return md
 }
-
 
 // FUNCIÓN DE MDLINKS, NO DEBE IR AQUÍ PERO AUN NO SE MODULAR BIEN.
 MDLinks = (filesPath, options) => {
   const md = mds(filesPath);
-  const strings = md.toString();
-  console.log(strings, 'QUESOO')
-  console.log(md, 'buuu');
-  console.log(path.resolve(md), 'pajatidos')
-  console.log(path.resolve(filesPath), 'holooo')
-  //console.log(path.isAbsolute(filesPath));
-  console.log(md, 'gancitos');
   md.forEach((fileMd) => {
-    console.log(path.resolve(fileMd), 'holiii')
     const readMd = readFile(fileMd);
-    return readMd
+    const getLinksMd = getLinks(readMd);
+    if (comands['validate'] === '--v' || comands['validate'] === '--validate') {
+      return validationLinks(getLinksMd);}
+    if (comands['stats'] === '--s' || comands['stats'] === '--stats') {
+      console.log(statsStadistics(getLinksMd), 'linceee')
+      return statsStadistics(getLinksMd);
+    } else {
+      return getLinksMd;
+    } 
   })
-  //const links = getLinks(md);
-  //     if (comands['validate'] === '--v' || comands['validate'] === '--validate') {
-  //       return validateLinks(links)
-  //     } else if (comands['stats'] === '--s' || comands['stats'] === '--stats') {
-  //       return statsStadistics(links)
-  //     } else {
-  //       return links;
-  //     }
   // options('--validate', null);
   // options('--validate', '--stats');
   // options(null, '--stats');
   // options(null, null);  
-  return md
+  return 
 }
 MDLinks(comands['path'],(comands['stats']&&comands['validate']))
 // module.exports = {isFile: isFile};
 // module.exports = {isDir: isDir};
 // module.exports = {searchDir: searchDir};
-
