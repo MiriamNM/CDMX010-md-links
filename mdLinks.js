@@ -2,7 +2,6 @@ const colors = require('colors');
 const path = require('path');
 const fs = require('fs');
 const fetch = require('node-fetch');
-const { get } = require('http');
 //const controller = require('./controller.js');
 const process = require('process');
 const { rejects } = require('assert');
@@ -39,8 +38,8 @@ return resultado;
 }
 
 //Validar links.
-const validationLinks = (md) => {
-  md.forEach((link) => {
+const validationLinks = (links) => {
+  links.forEach((link) => {
     const linkMap = link.replace(/[{()}]/g, '');
     fetch(linkMap)
       .then((res) => {
@@ -54,7 +53,7 @@ const validationLinks = (md) => {
         (error) => console.log(error)
       )
   })
- return md;
+ return links;
 } 
 
 // Estadistica de los links.
@@ -75,52 +74,51 @@ const statsStadistics = (arrayMd) => {
     total: linksTotal.length,}
   
   console.log(result, 'wiiiii');
-  console.log(resultado, 'si toy');
   return result;
 }
 
 // función para poner los archivos md en un array.
-const mds = (filePath) => {
-  let md = [];
+const getMds = (filePath) => {
+  let arrayMd = [];
   if (fs.statSync(filePath).isDirectory()) {
     const files = filesDir(filePath);
         files.forEach((file) => {
           if (path.extname(file) === '.md') {
             const mdDir = path.join(filePath,file)
-            md= md.concat(mdDir);
+            arrayMd= arrayMd.concat(mdDir);
           } else {
           console.log('No es .md')
           }
         })
   } else if (path.extname(filePath) === '.md') {
-    md= md.concat(filePath); 
+    arrayMd= arrayMd.concat(filePath); 
   }
-  return (md)
+  return (arrayMd)
 }
 
 // FUNCIÓN DE MDLINKS, NO DEBE IR AQUÍ PERO AUN NO SE MODULAR BIEN.
 const MDLinks = (filePath, comands) => {
   return new Promise((resolve, rejects) => {
-    const md = mds(filePath);
-    md.forEach((fileMd) => {
-      const readMd = readFile(fileMd);
-      const getLinksMd = getLinks(readMd);
+    const arrayMd = getMds(filePath);
+    arrayMd.forEach((fileMd) => {
+      const archiveContent = readFile(fileMd);
+      const theLinks = getLinks(archiveContent);
       if (comands['validate'] === null || comands['validate'] === undefined) {
-        resolve(console.log(getLinksMd));
+        resolve(theLinks);
       } else {
-        resolve(validationLinks(getLinksMd));
+        resolve(validationLinks(theLinks));
       }
-      rejects(error);
+      rejects(console.log(error, '>>>>>>>>>'));
     })
   })   
 }
 
-Promise.all(MDLinks())
+MDLinks()
   .then((res) => {
     if (comands['stats'] === null || comands['stats'] === undefined) {
-      return (console.log(getLinks(res)));
+      return Promise.all(console.log(getLinks(res)));
     } else {
-      return (statsStadistics(res));
+      return Promise.all(statsStadistics(res));
     }
   })
   .then((res) => {console.log(res, 'patito')})
