@@ -42,41 +42,41 @@ return resultado;
 const validationLinks = (md) => {
   md.forEach((link) => {
     const linkMap = link.replace(/[{()}]/g, '');
-    fetch(md)
+    fetch(linkMap)
       .then((res) => {
-      //console.log(res,'gatito');
-        if(res.status === 200) {
-          console.log({path: path.resolve(linkMap), status: res.status, statusText: 'OK', url:linkMap});
+        if(res.statusText === 'OK') {
+          console.log({path: path.resolve(linkMap), status: res.status, statusText: 'OK', url:linkMap})
         } else {
-          console.log({path: path.resolve(linkMap), status: res.status, statusText: 'FAIL', url:linkMap});
+          console.log({path: path.resolve(linkMap), status: res.status, statusText: 'FAIL', url:linkMap})
         }
       })
       .catch(
         (error) => console.log(error)
       )
-  });
+  })
  return md;
 } 
 
 // Estadistica de los links.
-const statsStadistics = (resultado) => {
+const statsStadistics = (arrayMd) => {
+  console.log(arrayMd, 'vaquita')
   let linksTotal = [];
   let linksBad = [];
   let result = {}
-  resultado.forEach((link) => {
+  arrayMd.forEach((link) => {
     linksTotal.push(link);
-    if(res.status !== 200) {
+    if(link.statusText === 'FAIL') {
           linksBad.push(link);
         }
-    console.log(result, 'wiiiii');
-    result = {
-      Broken: linksBad.length,
-      Unique: [...new Set(linksTotal)].length,
-      total: linksTotal.length,
-    }
-    console.log(resultado, 'si toy');
-    return resultado;
   });
+  result = {
+    Broken: linksBad.length,
+    Unique: [...new Set(linksTotal)].length,
+    total: linksTotal.length,}
+  
+  console.log(result, 'wiiiii');
+  console.log(resultado, 'si toy');
+  return result;
 }
 
 // función para poner los archivos md en un array.
@@ -105,25 +105,24 @@ const MDLinks = (filePath, comands) => {
     md.forEach((fileMd) => {
       const readMd = readFile(fileMd);
       const getLinksMd = getLinks(readMd);
-      if (comands['validate'] === null) {
+      if (comands['validate'] === null || comands['validate'] === undefined) {
         resolve(console.log(getLinksMd));
       } else {
         resolve(validationLinks(getLinksMd));
       }
       rejects(error);
-    
     })
   })   
 }
 
-MDLinks(comands)
-.then((getLinksMd) => {
-    if (comands['stats'] === null) {
-      return Promise.all(console.log(getLinksMd));
+Promise.all(MDLinks())
+  .then((res) => {
+    if (comands['stats'] === null || comands['stats'] === undefined) {
+      return (console.log(getLinks(res)));
     } else {
-      return Promise.all(statsStadistics(getLinksMd));
+      return (statsStadistics(res));
     }
   })
   .then((res) => {console.log(res, 'patito')})
-  .catch((err) => {return err});  
+  .catch((err) => {console.log(err, '<<<<<<<')});  
 MDLinks(comands['path'],(comands['validate']&&comands['stats']))
