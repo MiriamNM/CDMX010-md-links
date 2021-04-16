@@ -2,12 +2,10 @@ const colors = require('colors');
 const path = require('path');
 const fs = require('fs');
 const fetch = require('node-fetch');
-//const controller = require('./controller.js');
 const process = require('process');
 const { rejects } = require('assert');
 const { resolve } = require('path');
 const { error } = require('console');
-//const MDLinks = require('./index.js');
 
 // FUNCIÓN DE CLI, NO DEBE IR AQUÍ PERO AUN NO SE MODULAR BIEN.
 const cliCommand = process.argv;
@@ -17,6 +15,13 @@ const comands = {
   path: cliCommand[2],
   validate: cliCommand[3],
   stats: cliCommand[4],
+}
+
+let option ='';
+if (comands['validate'] == undefined || comands['validate'] == null) {
+  option = comands.replace(3,1,'stats')
+} else if (comands['stats'] == undefined || comands['stats'] == null){  
+  option = comands.replace(4,1,'validate')
 }
 
 //leer archivo INDIVIDUAL.
@@ -53,12 +58,11 @@ const validationLinks = (links) => {
         (error) => console.log(error)
       )
   })
- return links;
+ return Promise.all(links);
 } 
 
 // Estadistica de los links.
 const statsStadistics = (arrayMd) => {
-  console.log(arrayMd, 'vaquita')
   let linksTotal = [];
   let linksBad = [];
   let result = {}
@@ -73,7 +77,7 @@ const statsStadistics = (arrayMd) => {
     Unique: [...new Set(linksTotal)].length,
     total: linksTotal.length,}
   
-  console.log(result, 'wiiiii');
+  console.log(result);
   return result;
 }
 
@@ -93,34 +97,41 @@ const getMds = (filePath) => {
   } else if (path.extname(filePath) === '.md') {
     arrayMd= arrayMd.concat(filePath); 
   }
+  console.log(arrayMd,'vaquita');
   return (arrayMd)
 }
 
 // FUNCIÓN DE MDLINKS, NO DEBE IR AQUÍ PERO AUN NO SE MODULAR BIEN.
-const MDLinks = (filePath, comands) => {
+const MDLinks = (filePath, option) => {
   return new Promise((resolve, rejects) => {
     const arrayMd = getMds(filePath);
     arrayMd.forEach((fileMd) => {
       const archiveContent = readFile(fileMd);
+      console.log(archiveContent,'patito')
       const theLinks = getLinks(archiveContent);
+      console.log(theLinks,'caracolitos')
       if (comands['validate'] === null || comands['validate'] === undefined) {
         resolve(theLinks);
       } else {
         resolve(validationLinks(theLinks));
       }
-      rejects(console.log(error, '>>>>>>>>>'));
+      if (comands['path'] === false) {
+      rejects(console.log(error, '>>>>>>>>>'));//Si path esta mal
+      }
     })
   })   
 }
 
-MDLinks()
+
+MDLinks(comands['path'])
   .then((res) => {
-    if (comands['stats'] === null || comands['stats'] === undefined) {
-      return Promise.all(console.log(getLinks(res)));
+   /* if (comands['stats'] === null || comands['stats'] === undefined) {
+      return Promise.all(console.log(getLinks(res)), 'De stats');
     } else {
       return Promise.all(statsStadistics(res));
-    }
+    }*/
+    console.log('primera respuesta <<<<<', res)
   })
-  .then((res) => {console.log(res, 'patito')})
+  .then((res) => {console.log(res, 'patito feliz')})
   .catch((err) => {console.log(err, '<<<<<<<')});  
-MDLinks(comands['path'],(comands['validate']&&comands['stats']))
+MDLinks(comands['path'], option)
