@@ -3,26 +3,18 @@ const path = require('path');
 const fs = require('fs');
 const fetch = require('node-fetch');
 const process = require('process');
-const { rejects } = require('assert');
-const { resolve } = require('path');
-const { error } = require('console');
 
 // FUNCIÓN DE CLI, NO DEBE IR AQUÍ PERO AUN NO SE MODULAR BIEN.
-const cliCommand = process.argv;
-const comands = {
-  node: cliCommand[0],
-  mdLinks: cliCommand[1],
-  path: cliCommand[2],
-  validate: cliCommand[3],
-  stats: cliCommand[4],
-}
+const thePath = process.argv[2];
+const findOption = (defaultOption, shortOption) => process.argv.findIndex((option) => option == shortOption || option == defaultOption);
+const statsOptionIndex = findOption('--stats', '-s')
+const validateOptionIndex = findOption('--validate', '-v')
 
-let option ='';
-if (comands['validate'] == undefined || comands['validate'] == null) {
-  option = comands.replace(3,1,'stats')
-} else if (comands['stats'] == undefined || comands['stats'] == null){  
-  option = comands.replace(4,1,'validate')
-}
+const options = {
+  validate: validateOptionIndex > 0,
+  stats: statsOptionIndex > 0,
+};
+console.log({ options })
 
 //leer archivo INDIVIDUAL.
 const readFile = (file) => {
@@ -44,40 +36,51 @@ return resultado;
 
 //Validar links.
 const validationLinks = (links) => {
-  links.forEach((link) => {
+  const promises = links.map((link) => { // [Promise, Promise, Promise]
     const linkMap = link.replace(/[{()}]/g, '');
-    fetch(linkMap)
+    return fetch(linkMap)
       .then((res) => {
-        if(res.statusText === 'OK') {
-          console.log({path: path.resolve(linkMap), status: res.status, statusText: 'OK', url:linkMap})
-        } else {
-          console.log({path: path.resolve(linkMap), status: res.status, statusText: 'FAIL', url:linkMap})
+        const link = { 
+          path: path.resolve(linkMap),
+          status: res.status,
+          statusText: res.ok ? 'OK' : 'FAIL', 
+          url: linkMap 
         }
+        //console.log(link)
+        return link
       })
-      .catch(
-        (error) => console.log(error)
-      )
-  })
- return Promise.all(links);
-} 
-
-// Estadistica de los links.
-const statsStadistics = (arrayMd) => {
-  let linksTotal = [];
-  let linksBad = [];
-  let result = {}
-  arrayMd.forEach((link) => {
-    linksTotal.push(link);
-    if(link.statusText === 'FAIL') {
-          linksBad.push(link);
+      .catch(() => {
+          const link = { 
+            path: path.resolve(linkMap),
+            status: 500,
+            statusText: 'FAIL', 
+            url: linkMap 
+          }
+          //console.log(link)
+          return link
         }
+      )
   });
-  result = {
-    Broken: linksBad.length,
-    Unique: [...new Set(linksTotal)].length,
-    total: linksTotal.length,}
-  
-  console.log(result);
+  return Promise.all(promises);
+}  
+
+// Función que filtra los links del arreglo.
+const getBrokenLinks = (links) => {
+  return links.filter(link => link.statusText == 'FAIL')
+}
+
+// Función con la que se conoce la longitud de de broken.
+const brokenStats = (links) => {
+  const brokenLinks =  getBrokenLinks(links);
+  return brokenLinks.length;
+}
+// Estadistica global.
+const globalStats = (links) => {
+  //console.log(objectArray, 'reeeeesp');
+  const result = {
+    unique: [...new Set(links)].length,
+    total: links.length,
+  }
   return result;
 }
 
@@ -104,34 +107,31 @@ const getMds = (filePath) => {
 // FUNCIÓN DE MDLINKS, NO DEBE IR AQUÍ PERO AUN NO SE MODULAR BIEN.
 const MDLinks = (filePath, option) => {
   return new Promise((resolve, rejects) => {
-    const arrayMd = getMds(filePath);
-    arrayMd.forEach((fileMd) => {
-      const archiveContent = readFile(fileMd);
-      console.log(archiveContent,'patito')
-      const theLinks = getLinks(archiveContent);
-      console.log(theLinks,'caracolitos')
-      if (comands['validate'] === null || comands['validate'] === undefined) {
-        resolve(theLinks);
-      } else {
-        resolve(validationLinks(theLinks));
-      }
-      if (comands['path'] === false) {
-      rejects(console.log(error, '>>>>>>>>>'));//Si path esta mal
-      }
-    })
+    let links = [];
+    const files = getMds(filePath);
+  files.forEach((file) => {
+      const content = readFile(file);
+      const newLinks = getLinks(content);
+      links = links.concat(newLinks)      
+  })
+  if (options.validate && options.stats) {
+    return validationLinks(links)
+      .then(res => {
+        console.log(res);
+        const stats = globalStats(links)
+        stats.broken = brokenStats(res)
+        console.log(stats)
+      })
+  }
+  if (options.validate) {
+    return validationLinks(links).then(res => console.log(res))
+  }
+  if (options.stats) {
+    const stats = globalStats(links)
+    console.log(stats)
+  }
+  resolve(console.log(links));
   })   
 }
 
-
-MDLinks(comands['path'])
-  .then((res) => {
-   /* if (comands['stats'] === null || comands['stats'] === undefined) {
-      return Promise.all(console.log(getLinks(res)), 'De stats');
-    } else {
-      return Promise.all(statsStadistics(res));
-    }*/
-    console.log('primera respuesta <<<<<', res)
-  })
-  .then((res) => {console.log(res, 'patito feliz')})
-  .catch((err) => {console.log(err, '<<<<<<<')});  
-MDLinks(comands['path'], option)
+MDLinks(thePath, options)
