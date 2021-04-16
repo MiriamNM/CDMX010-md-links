@@ -14,7 +14,6 @@ const options = {
   validate: validateOptionIndex > 0,
   stats: statsOptionIndex > 0,
 };
-console.log({ options })
 
 //leer archivo INDIVIDUAL.
 const readFile = (file) => {
@@ -46,7 +45,6 @@ const validationLinks = (links) => {
           statusText: res.ok ? 'OK' : 'FAIL', 
           url: linkMap 
         }
-        //console.log(link)
         return link
       })
       .catch(() => {
@@ -56,7 +54,6 @@ const validationLinks = (links) => {
             statusText: 'FAIL', 
             url: linkMap 
           }
-          //console.log(link)
           return link
         }
       )
@@ -76,7 +73,6 @@ const brokenStats = (links) => {
 }
 // Estadistica global.
 const globalStats = (links) => {
-  //console.log(objectArray, 'reeeeesp');
   const result = {
     unique: [...new Set(links)].length,
     total: links.length,
@@ -100,7 +96,6 @@ const getMds = (filePath) => {
   } else if (path.extname(filePath) === '.md') {
     arrayMd= arrayMd.concat(filePath); 
   }
-  console.log(arrayMd,'vaquita');
   return (arrayMd)
 }
 
@@ -117,20 +112,21 @@ const MDLinks = (filePath, option) => {
   if (options.validate && options.stats) {
     return validationLinks(links)
       .then(res => {
-        console.log(res);
         const stats = globalStats(links)
         stats.broken = brokenStats(res)
-        console.log(stats)
+        resolve(console.log(stats, res));
       })
   }
   if (options.validate) {
-    return validationLinks(links).then(res => console.log(res))
+    resolve(validationLinks(links).then(res => console.log(res)))
   }
   if (options.stats) {
     const stats = globalStats(links)
-    console.log(stats)
+    resolve(console.log(stats))
   }
-  resolve(console.log(links));
+  if (!options.validate && !options.stats) {
+    resolve(console.log(links));
+  }
   })   
 }
 
