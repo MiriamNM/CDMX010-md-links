@@ -1,19 +1,6 @@
-const colors = require('colors');
 const path = require('path');
 const fs = require('fs');
 const fetch = require('node-fetch');
-const process = require('process');
-
-// FUNCIÓN DE CLI, NO DEBE IR AQUÍ PERO AUN NO SE MODULAR BIEN.
-const thePath = process.argv[2];
-const findOption = (defaultOption, shortOption) => process.argv.findIndex((option) => option == shortOption || option == defaultOption);
-const statsOptionIndex = findOption('--stats', '-s')
-const validateOptionIndex = findOption('--validate', '-v')
-
-const options = {
-  validate: validateOptionIndex > 0,
-  stats: statsOptionIndex > 0,
-};
 
 //leer archivo INDIVIDUAL.
 const readFile = (file) => {
@@ -99,35 +86,11 @@ const getMds = (filePath) => {
   return (arrayMd)
 }
 
-// FUNCIÓN DE MDLINKS, NO DEBE IR AQUÍ PERO AUN NO SE MODULAR BIEN.
-const MDLinks = (filePath, option) => {
-  return new Promise((resolve, rejects) => {
-    let links = [];
-    const files = getMds(filePath);
-  files.forEach((file) => {
-      const content = readFile(file);
-      const newLinks = getLinks(content);
-      links = links.concat(newLinks)      
-  })
-  if (options.validate && options.stats) {
-    return validationLinks(links)
-      .then(res => {
-        const stats = globalStats(links)
-        stats.broken = brokenStats(res)
-        resolve(console.log(stats, res));
-      })
-  }
-  if (options.validate) {
-    resolve(validationLinks(links).then(res => console.log(res)))
-  }
-  if (options.stats) {
-    const stats = globalStats(links)
-    resolve(console.log(stats))
-  }
-  if (!options.validate && !options.stats) {
-    resolve(console.log(links));
-  }
-  })   
+module.exports = {
+  readFile,
+  getLinks,
+  validationLinks,
+  brokenStats,
+  globalStats,
+  getMds,
 }
-
-MDLinks(thePath, options)
