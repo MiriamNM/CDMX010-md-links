@@ -36,7 +36,7 @@ En este proyecto se utilizaron tecnologias como Node.js, JS, gitHub proyect y un
 ## 3. Proceso
 
 *Para el desarrollo del proyecto, promero se realizo un diagrama de flujo.
-[diagrama mDLinks] ().
+![diagrama mDLinks](https://github.com/MiriamNM/CDMX010-md-links/blob/master/assets/Diagrama%20md-Links.png)
 
 *Posteriosmente se paso al estudio de node.js para saber que metodos se usaría en el proyecto.
 
@@ -63,14 +63,13 @@ Finalmente se comenzo a programar hasta obtener finalmente la extensión mDLinks
 
 * Debes de poner en tu consola `npm install <github-user>/md-links`, para descargar la extensión.
 * Primero, en la consola debes de colocar: node md-Links (seguido de la ruta del archivo.)
--imagen node
+![Comandos](https://github.com/MiriamNM/CDMX010-md-links/blob/master/assets/inicio.png)
 * Posteriormente debes de poner :
 -v o --validate: Para que te muestre si el Links esta roto o si sirve.
--imagen
+![Validacion de Links](https://github.com/MiriamNM/CDMX010-md-links/blob/master/assets/v.png)
 -s o --stats: Para que te muestre una estadistica de cuantos son unicos y el total de links obtenidos.
-imagen
+![Estadistica de Links](https://github.com/MiriamNM/CDMX010-md-links/blob/master/assets/s.png)
 -v -s o --validate --stats: Para que te muestre el estado de los links y una estadistica de cuantos rotos, unicos y el número tota de links. 
-Si solo 
-imagen
+![Validacion y estadistica de Links](https://github.com/MiriamNM/CDMX010-md-links/blob/master/assets/v%20s.png)
 Si solo pones la ruta del archivo, te muestra solo los links.
-imagen.
+![Links](https://github.com/MiriamNM/CDMX010-md-links/blob/master/assets/path.png)
