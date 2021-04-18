@@ -2,7 +2,7 @@
   "name": "md-links",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "md-links.js",
   "directories": {
     "test": "test"
   },
@@ -21,7 +21,10 @@
   },
   "homepage": "https://github.com/MiriamNM/CDMX010-md-links#readme",
   "dependencies": {
+    "arg": "^5.0.0",
     "colors": "^1.4.0",
+    "commander": "^7.2.0",
+    "inquirer": "^8.0.0",
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {
