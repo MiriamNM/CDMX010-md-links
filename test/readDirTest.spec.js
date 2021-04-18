@@ -1,4 +1,4 @@
-const filesDir = require('./../mdLinks.js');
+const filesDir = require('./../mdLinksFunctions.js');
 const fs = require('fs');
 
 //const filesDir= () => {fs.filesDirSync('./../documentos', 'utf-8')};

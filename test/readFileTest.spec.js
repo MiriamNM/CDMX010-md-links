@@ -1,4 +1,4 @@
-const readFile = require('./../mdLinks.js');
+const readFile = require('./../mdLinksFunctions.js');
 const fs = require('fs');
 
 //const readFile = () => {fs.readFileSync('./../documentos/doc1.txt', 'utf-8')};

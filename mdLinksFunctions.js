@@ -22,12 +22,12 @@ return resultado;
 
 //Validar links.
 const validationLinks = (links) => {
-  const promises = links.map((link) => { // [Promise, Promise, Promise]
+  const promises = links.map((link) => {
     const linkMap = link.replace(/[{()}]/g, '');
     return fetch(linkMap)
       .then((res) => {
         const link = { 
-          path: path.resolve(linkMap),
+          path: __filename,
           status: res.status,
           statusText: res.ok ? 'OK' : 'FAIL', 
           url: linkMap 
@@ -36,7 +36,7 @@ const validationLinks = (links) => {
       })
       .catch(() => {
           const link = { 
-            path: path.resolve(linkMap),
+            path: __filename,
             status: 500,
             statusText: 'FAIL', 
             url: linkMap 

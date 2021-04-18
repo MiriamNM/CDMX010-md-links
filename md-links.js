@@ -1,6 +1,6 @@
 const process = require('process');
 const colors = require('colors');
-const marckDownLinks = require('./mdLinks');
+const marckDownLinks = require('./mdLinksFunctions');
 
 const path = process.argv[2];
 const findOption = (defaultOption, shortOption) => process.argv.findIndex((option) => option == shortOption || option == defaultOption);
@@ -14,8 +14,8 @@ const options = {
 
 module.exports = MDLinks = (path, options) => {
     return new Promise((resolve, rejects) => {
-        let links = [];
-        const files = marckDownLinks.getMds(path);
+      let links = [];
+      const files = marckDownLinks.getMds(path);
       files.forEach((file) => {
           const content = marckDownLinks.readFile(file);
           const newLinks = marckDownLinks.getLinks(content);

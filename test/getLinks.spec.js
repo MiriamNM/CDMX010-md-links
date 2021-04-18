@@ -1,4 +1,4 @@
-const getLinks = require('./../mdLinks.js');
+const getLinks = require('./../mdLinksFunctions.js');
 
 describe('Obtener los links', () => {
   it('deberia ser una const', () => {

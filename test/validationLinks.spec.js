@@ -1,11 +1,12 @@
-const validationLinks = require('./../mdLinks.js');
+const mdLink = require('../mdLinksFunctions.js');
+const helpers = require('./helpersTest.js');
 
 describe('Obtener los links validados', () => {
   it('deberia ser una const', () => {
-    expect(validationLinks).toBeDefined();
+    expect(mdLink.validationLinks).toBeDefined();
   });
-  it('Deberia de ser un objeto', () => {
-    expect(typeof validationLinks).toBe('object');
+  it('Deberia de ser un función', () => {
+    expect(typeof mdLink.validationLinks).toBe('function');
   });
   it('Si retorna los arreglos', () => {
     expect([{      
@@ -55,5 +56,9 @@ describe('Obtener los links validados', () => {
     statusText: 'OK',
     url: 'https://nodejs.org/api/path.html'
   }]);
-  })
+  });
+  it('Validar la información de cada Link', () => {
+    return (mdLink.validationLinks(helpers.links)).then(result => 
+      expect(result).toStrictEqual(helpers.validateLinks));
+  });
 });
