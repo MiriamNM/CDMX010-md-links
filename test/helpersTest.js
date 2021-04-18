@@ -1,57 +1,65 @@
 const links = [
     'https://www.npmjs.com/))',
     'https://nodejs.org/docs/latest-v0.10.x/api/modules.html)',
-    'https://docs..npmjs.com/files/package.json)',
-    'https://docs.npmjs.com/misc/scripts)',
-    'https://nodejs.org/api/fs.html#fs_fs_readdir_path_options_callback)',
-    'https://nodejs.org/api/path.html)',
-    'https://medium.com/netscape/a-guide-to-create-a--nodejs-command-line-package-c2166ad0452e)'
+    'https://docs..npmjs.com/files,/package.json)',
+    'https://docs.npmjs.com/misc/scripts)'
   ]
 
 const validateLinks = [
     {
-      path: "C:\\Users\\hp\\Documents\\Laboratoria\\CDMX010-md-links\\mdLinksFunctions.js",
+      path: 'C:\\Users\\hp\\Documents\\Laboratoria\\CDMX010-md-links\\mdLinksFunctions.js',
       status: 200,
       statusText: 'OK',
       url: 'https://www.npmjs.com/'
     },
     {
-      path: "C:\\Users\\hp\\Documents\\Laboratoria\\CDMX010-md-links\\mdLinksFunctions.js",
+      path: 'C:\\Users\\hp\\Documents\\Laboratoria\\CDMX010-md-links\\mdLinksFunctions.js',
       status: 200,
       statusText: 'OK',
       url: 'https://nodejs.org/docs/latest-v0.10.x/api/modules.html'
     },
     {
-      path: "C:\\Users\\hp\\Documents\\Laboratoria\\CDMX010-md-links\\mdLinksFunctions.js",
+      path: 'C:\\Users\\hp\\Documents\\Laboratoria\\CDMX010-md-links\\mdLinksFunctions.js',
       status: 500,
       statusText: 'FAIL',
-      url: 'https://docs..npmjs.com/files/package.json'
+      url: 'https://docs..npmjs.com/files,/package.json'
     },
     {
-      path: "C:\\Users\\hp\\Documents\\Laboratoria\\CDMX010-md-links\\mdLinksFunctions.js",
+      path: 'C:\\Users\\hp\\Documents\\Laboratoria\\CDMX010-md-links\\mdLinksFunctions.js',
       status: 200,
       statusText: 'OK',
       url: 'https://docs.npmjs.com/misc/scripts'
-    },
-    {
-      path: "C:\\Users\\hp\\Documents\\Laboratoria\\CDMX010-md-links\\mdLinksFunctions.js",
-      status: 200,
-      statusText: 'OK',
-      url: 'https://nodejs.org/api/fs.html#fs_fs_readdir_path_options_callback'
-    },
-    {
-      path: "C:\\Users\\hp\\Documents\\Laboratoria\\CDMX010-md-links\\mdLinksFunctions.js",
-      status: 200,
-      statusText: 'OK',
-      url: 'https://nodejs.org/api/path.html'
-    },
-    {
-      path: "C:\\Users\\hp\\Documents\\Laboratoria\\CDMX010-md-links\\mdLinksFunctions.js",
-      status: 200,
-      statusText: 'OK',
-      url: 'https://medium.com/netscape/a-guide-to-create-a--nodejs-command-line-package-c2166ad0452e'
     }
   ]
+
+const statsLinks = { unique: 4, total: 4 }
+
+const statsValidateLinks = { unique: 4, total: 4, broken: 1 } [
+    {
+      path: 'C:\\Users\\hp\\Documents\\Laboratoria\\CDMX010-md-links\\mdLinksFunctions.js',
+      status: 200,
+      statusText: 'OK',
+      url: 'https://www.npmjs.com/'
+    },
+    {
+      path: 'C:\\Users\\hp\\Documents\\Laboratoria\\CDMX010-md-links\\mdLinksFunctions.js',
+      status: 200,
+      statusText: 'OK',
+      url: 'https://nodejs.org/docs/latest-v0.10.x/api/modules.html'
+    },
+    {
+      path: 'C:\\Users\\hp\\Documents\\Laboratoria\\CDMX010-md-links\\mdLinksFunctions.js',
+      status: 500,
+      statusText: 'FAIL',
+      url: 'https://docs..npmjs.com/files,/package.json'
+    },
+    {
+      path: 'C:\\Users\\hp\\Documents\\Laboratoria\\CDMX010-md-links\\mdLinksFunctions.js',
+      status: 200,
+      statusText: 'OK',
+      url: 'https://docs.npmjs.com/misc/scripts'
+    }
+  ];
 
 const globStats = { unique: 7, total: 7 }
 
@@ -68,11 +76,8 @@ const path = "C:\\Users\\hp\\Documents\\Laboratoria\\CDMX010-md-links\\documento
 const options1Test = [
     'https://www.npmjs.com/))',
     'https://nodejs.org/docs/latest-v0.10.x/api/modules.html)',
-    'https://docs..npmjs.com/files/package.json)',
-    'https://docs.npmjs.com/misc/scripts)',
-    'https://nodejs.org/api/fs.html#fs_fs_readdir_path_options_callback)',
-    'https://nodejs.org/api/path.html)',
-    'https://medium.com/netscape/a-guide-to-create-a--nodejs-command-line-package-c2166ad0452e)'
+    'https://docs..npmjs.com/files,/package.json)',
+    'https://docs.npmjs.com/misc/scripts)'
   ]
 
 module.exports = {
@@ -85,4 +90,6 @@ module.exports = {
     options4,
     options1Test,
     path,
+    statsLinks,
+    statsValidateLinks,
 }
