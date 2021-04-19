@@ -26,19 +26,20 @@ module.exports = MDLinks = (path, options) => {
           .then(res => {
             const stats = marckDownLinks.globalStats(links)
             stats.broken = marckDownLinks.brokenStats(res)
-            resolve(console.log(stats, res));
+            resolve(stats, res);
           })
       }
       if (options.validate) {
-        resolve(marckDownLinks.validationLinks(links).then(res => console.log(res)))
+        resolve(marckDownLinks.validationLinks(links))/*.then(res => console.log(res)))*/
       }
       if (options.stats) {
         const stats = marckDownLinks.globalStats(links)
-        resolve(console.log(stats))
+        resolve(stats)
       }
       if (!options.validate && !options.stats) {
-        resolve(console.log(links));
+        resolve(links);
       }
       })
 }
 MDLinks(path,options)
+ .then((res) => {console.log(res)})

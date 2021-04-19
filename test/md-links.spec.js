@@ -23,7 +23,7 @@ describe('MDLinks retornan los links obtenidos', () => {
 });
 
 test('Arroja sólo los links', () => {
-    return expect(MDLinks("C:\\Users\\hp\\Documents\\Laboratoria\\CDMX010-md-links\\documentos\\doc1.md",options)).resolves.toBe(helpers.options1Test);
+    return expect(MDLinks("C:\\Users\\hp\\Documents\\Laboratoria\\CDMX010-md-links\\documentos\\doc1.md",options)).resolves.toStrictEqual(helpers.options1Test);
 });
 
 
@@ -48,7 +48,7 @@ describe('Obtener los links validados', () => {
 });
 
 test('Arroja sólo los links', () => {
-    return expect(MDLinks("C:\\Users\\hp\\Documents\\Laboratoria\\CDMX010-md-links\\documentos\\doc1.md",options2)).resolves.toBe(helpers.validateLinks);
+    return expect(MDLinks("C:\\Users\\hp\\Documents\\Laboratoria\\CDMX010-md-links\\documentos\\doc1.md",options2)).resolves.toStrictEqual(helpers.validateLinks);
 });
 
 describe('Obtener estadisitica de los links', () => {
@@ -72,7 +72,7 @@ describe('Obtener estadisitica de los links', () => {
 });
 
 test('Obtener estadistica y validación de los links', () => {
-    return expect(MDLinks("C:\\Users\\hp\\Documents\\Laboratoria\\CDMX010-md-links\\documentos\\doc1.md",options3)).resolves.toBe(helpers.statsLinks);
+    return expect(MDLinks("C:\\Users\\hp\\Documents\\Laboratoria\\CDMX010-md-links\\documentos\\doc1.md",options3)).resolves.toStrictEqual(helpers.statsLinks);
 });
 
 describe('Obtener los links validados', () => {
@@ -96,5 +96,5 @@ describe('Obtener los links validados', () => {
 });
 
 test('Estadistica y validación de los links', () => {
-    return expect(MDLinks("C:\\Users\\hp\\Documents\\Laboratoria\\CDMX010-md-links\\documentos\\doc1.md",options4)).resolves.toBe(helpers.statsValidateLinks);
+    return expect(MDLinks("C:\\Users\\hp\\Documents\\Laboratoria\\CDMX010-md-links\\documentos\\doc1.md",options4)).resolves.toStrictEqual(helpers.statsValidateLinks);
 });
