@@ -37,7 +37,7 @@ describe('Obtener los links validados', () => {
     it('Si retorna los arreglos', () => {
       expect().toEqual();
     });
-    it('Validar la información de cada Link', () => {
+    it.only('Validar la información de cada Link', () => {
       return (MDLinks()).then(result => 
         expect(helpers.validateLinks).toStrictEqual(helpers.validateLinks));
     });
@@ -48,7 +48,7 @@ describe('Obtener los links validados', () => {
 });
 
 test('Arroja sólo los links', () => {
-    return expect(MDLinks("C:\\Users\\hp\\Documents\\Laboratoria\\CDMX010-md-links\\documentos\\doc1.md",options2)).resolves.toStrictEqual(helpers.validateLinks);
+    return expect(MDLinks(path,options2)).resolves.toStrictEqual(helpers.validateLinks);
 });
 
 describe('Obtener estadisitica de los links', () => {
@@ -75,7 +75,7 @@ test('Obtener estadistica y validación de los links', () => {
     return expect(MDLinks("C:\\Users\\hp\\Documents\\Laboratoria\\CDMX010-md-links\\documentos\\doc1.md",options3)).resolves.toStrictEqual(helpers.statsLinks);
 });
 
-describe('Obtener los links validados', () => {
+describe('Obtener los links validados y con estadistica', () => {
     it('deberia ser una const', () => {
       expect(MDLinks).toBeDefined();
     });

@@ -26,7 +26,7 @@ module.exports = MDLinks = (path, options) => {
           .then(res => {
             const stats = marckDownLinks.globalStats(links)
             stats.broken = marckDownLinks.brokenStats(res)
-            resolve(stats, res);
+            resolve(console.log(res, stats));
           })
       }
       if (options.validate) {

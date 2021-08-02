@@ -1,75 +1,60 @@
 # Markdown Links
 
-## Índice
+[Markdown] (https://es.wikipedia.org/wiki/Markdown) is a markup language
+lightweight very popular with developers. It is used in many platforms that
+handle plain text (GitHub, forums, blogs, ...), and it is very common
+find multiple files in that format in any type of repository
+(starting with the traditional `README.md`).
 
-* [1. Preámbulo](#1-preámbulo)
-* [2. Desarrollo del proyecto](#2-desarroll-del-proyecto)
-* [3. Procesoe](#3-proceso)
-* [4. Consideraciones generales](#4-consideraciones-generales)
-* [5. Archivos del proyecto](#5-archivos-del-proyecto)
-* [6. Instrucciónes de uso](#6-instrucciones-de-uso)
-***
+## Process
 
-## 1. Preámbulo
+* Flowchart
+![Flowchart](https://github.com/MiriamNM/CDMX010-md-links/blob/master/assets/Diagrama%20md-Links.png)
 
-[Markdown](https://es.wikipedia.org/wiki/Markdown) es un lenguaje de marcado
-ligero muy popular entre developers. Es usado en muchísimas plataformas que
-manejan texto plano (GitHub, foros, blogs, ...), y es muy común
-encontrar varios archivos en ese formato en cualquier tipo de repositorio
-(empezando por el tradicional `README.md`).
+## files
 
-Estos archivos `Markdown` normalmente contienen _links_ (vínculos/ligas) que
-muchas veces están rotos o ya no son válidos y eso perjudica mucho el valor de
-la información que se quiere compartir.
+* `README.md`.
+* `index.js`: From this file you must export a function (`mdLinks`).
+* `package.json`.
+* `.editorconfig`.
+* `.eslintrc`.
+* `.gitignore`.
+* `test/md-links.spec.js`.
+  `mdLinks()`.
 
-Dentro de una comunidad de código abierto, nos han propuesto crear una
-herramienta usando [Node.js](https://nodejs.org/), que lea y analice archivos
-en formato `Markdown`, para verificar los links que contengan y reportar
-algunas estadísticas.
+## Install
 
-![md-links](https://user-images.githubusercontent.com/110297/42118443-b7a5f1f0-7bc8-11e8-96ad-9cc5593715a6.jpg)
+```npm
+npm install -g md-links1
+```
 
-## 2. Desarrollo del proyecto
+* You must put in your console `npm i md-links1`, to download the extension.
+* First, in the console you must put: node md-Links (followed by the file path.)
+! [Commands] (https://github.com/MiriamNM/CDMX010-md-links/blob/master/assets/inicio.png)
+* Later you must put:
+-v or --validate: To show you if the Links is broken or if it works.
+! [Validation of Links] (https://github.com/MiriamNM/CDMX010-md-links/blob/master/assets/v.png)
+-s or --stats: To show you a statistic of how many are unique and the total number of links obtained.
+! [Link Statistics] (https://github.com/MiriamNM/CDMX010-md-links/blob/master/assets/s.png)
+-v -s or --validate --stats: To show you the status of the links and a statistic of how many broken, unique and the total number of links.
+! [Validation and statistics of Links] (https://github.com/MiriamNM/CDMX010-md-links/blob/master/assets/v%20s.png)
+If you only put the file path, it shows you only the links.
+! [Links] (https://github.com/MiriamNM/CDMX010-md-links/blob/master/assets/path.png)
 
-En este proyecto se utilizaron tecnologias como Node.js, JS, gitHub proyect y una pagina para realizar el diagrama de flujo que me guió para el desarroyo del trabajo. 
+# Usage
 
-## 3. Proceso
+```bash
+md-links1
+```
 
-*Para el desarrollo del proyecto, promero se realizo un diagrama de flujo.
-![diagrama mDLinks](https://github.com/MiriamNM/CDMX010-md-links/blob/master/assets/Diagrama%20md-Links.png)
+# Contributing
 
-*Posteriosmente se paso al estudio de node.js para saber que metodos se usaría en el proyecto.
+If someone wants to add or improve something, I invite you to collaborate directly in this repository: [md-links1](https://github.com/MiriamNM/CDMX010-md-links).
 
-Finalmente se comenzo a programar hasta obtener finalmente la extensión mDLinks. 
+# License
 
-## 5. Archivos del proyecto
+random-msg is released under the [MIT License](https://opensource.org/licenses/MIT).
 
-* `README.md` con descripción del módulo, instrucciones de instalación/uso,
-  documentación del API y ejemplos. Todo lo relevante para que cualquier
-  developer que quiera usar tu librería pueda hacerlo sin inconvenientes.
-* `index.js`: Desde este archivo debes exportar una función (`mdLinks`).
-* `package.json` con nombre, versión, descripción, autores, licencia,
-  dependencias, scripts (pretest, test, ...)
-* `.editorconfig` con configuración para editores de texto. Este archivo no se
-  debe cambiar.
-* `.eslintrc` con configuración para linter. Este archivo no
-  se debe cambiar.
-* `.gitignore` para ignorar `node_modules` u otras carpetas que no deban
-  incluirse en control de versiones (`git`).
-* `test/md-links.spec.js` debe contener los tests unitarios para la función
-  `mdLinks()`. Tu inplementación debe pasar estos tets.
+# Keywords
 
-## 6. Instrucciónes de uso
-
-* Debes de poner en tu consola `npm install <github-user>/md-links`, para descargar la extensión.
-* Primero, en la consola debes de colocar: node md-Links (seguido de la ruta del archivo.)
-![Comandos](https://github.com/MiriamNM/CDMX010-md-links/blob/master/assets/inicio.png)
-* Posteriormente debes de poner :
--v o --validate: Para que te muestre si el Links esta roto o si sirve.
-![Validacion de Links](https://github.com/MiriamNM/CDMX010-md-links/blob/master/assets/v.png)
--s o --stats: Para que te muestre una estadistica de cuantos son unicos y el total de links obtenidos.
-![Estadistica de Links](https://github.com/MiriamNM/CDMX010-md-links/blob/master/assets/s.png)
--v -s o --validate --stats: Para que te muestre el estado de los links y una estadistica de cuantos rotos, unicos y el número tota de links. 
-![Validacion y estadistica de Links](https://github.com/MiriamNM/CDMX010-md-links/blob/master/assets/v%20s.png)
-Si solo pones la ruta del archivo, te muestra solo los links.
-![Links](https://github.com/MiriamNM/CDMX010-md-links/blob/master/assets/path.png)
+Javascript Node.js npm
