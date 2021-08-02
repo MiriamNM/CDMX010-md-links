@@ -1,6 +1,6 @@
 {
   "name": "md-links1",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Md-Links is a markup language lightweight very popular with developers.",
   "main": "md-links.js",
   "directories": {
